@@ -5,15 +5,15 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld = LaunchDescription()
     config = os.path.join(
-        get_package_share_directory('log_manager'),
+        get_package_share_directory('log_recorder'),
         'config',
         'params.yaml'
         )
         
     node=Node(
-        package = 'log_manager',
-        name = 'log_manager',
-        executable = 'log_manager',
+        package = 'log_recorder',
+        name = 'log_recorder',
+        executable = 'log_recorder',
         parameters = [config]
     )
     ld.add_action(node)

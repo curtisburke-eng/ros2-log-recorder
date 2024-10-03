@@ -1,5 +1,5 @@
-#ifndef LOG_MANAGER_HPP
-#define LOG_MANAGER_HPP
+#ifndef LOG_RECORDER_HPP
+#define LOG_RECORDER_HPP
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -15,9 +15,9 @@
 #include <iomanip>
 #include <filesystem>
 
-class LogManager : public rclcpp::Node {
+class LogRecorder : public rclcpp::Node {
 public:
-    LogManager(const std::string &nodeName);
+    LogRecorder(const std::string &nodeName);
     void init(); // New init function
     
 private:
@@ -37,4 +37,4 @@ private:
     void tfStaticSubCallback(std::shared_ptr<rclcpp::SerializedMessage> msg);
 };
 
-#endif // LOG_MANAGER_HPP
+#endif // LOG_RECORDER_HPP

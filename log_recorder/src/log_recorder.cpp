@@ -1,36 +1,36 @@
-#include "log_manager/log_manager.hpp"
+#include "log_recorder/log_recorder.hpp"
 
-LogManager::LogManager(const std::string &nodeName) : Node(nodeName) {
-    RCLCPP_INFO(this->get_logger(), "Log Manager Node Initialized");
+LogRecorder::LogRecorder(const std::string &nodeName) : Node(nodeName) {
+    RCLCPP_INFO(this->get_logger(), "Log Recorder Node Created");
 }
 
-void LogManager::init() {
+void LogRecorder::init() {
     isRecording_ = false;
     // Service for starting recording
     startService_ = this->create_service<std_srvs::srv::Trigger>(
         "start_recording",
-        std::bind(&LogManager::startRecording, this, std::placeholders::_1, std::placeholders::_2)
+        std::bind(&LogRecorder::startRecording, this, std::placeholders::_1, std::placeholders::_2)
     );
 
     // Service for stopping recording
     stopService_ = this->create_service<std_srvs::srv::Trigger>(
         "stop_recording",
-        std::bind(&LogManager::stopRecording, this, std::placeholders::_1, std::placeholders::_2)
+        std::bind(&LogRecorder::stopRecording, this, std::placeholders::_1, std::placeholders::_2)
     );
 
     // Subscribe to multiple topics
     tfSub_ = this->create_subscription<tf2_msgs::msg::TFMessage>(
-        "tf", 10,std::bind(&LogManager::tfSubCallback, this, std::placeholders::_1));
+        "tf", 10,std::bind(&LogRecorder::tfSubCallback, this, std::placeholders::_1));
 
     tfStaticSub_ = this->create_subscription<tf2_msgs::msg::TFMessage>(
-        "tf_static", 10,std::bind(&LogManager::tfStaticSubCallback, this, std::placeholders::_1));
+        "tf_static", 10,std::bind(&LogRecorder::tfStaticSubCallback, this, std::placeholders::_1));
 
 
-    RCLCPP_INFO(this->get_logger(), "Log Manager Node Initialized");
+    RCLCPP_INFO(this->get_logger(), "Log Recorder Node Initialized");
 }
 
 // Service Trigger Functions
-void LogManager::startRecording(const std::shared_ptr<std_srvs::srv::Trigger::Request> request, std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
+void LogRecorder::startRecording(const std::shared_ptr<std_srvs::srv::Trigger::Request> request, std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
     if (isRecording_) {
         response->success = false;
         response->message = "Recording is already in progress.";
@@ -54,7 +54,7 @@ void LogManager::startRecording(const std::shared_ptr<std_srvs::srv::Trigger::Re
     RCLCPP_INFO(this->get_logger(), "Started recording to: %s", filename.c_str());
 }
 
-void LogManager::stopRecording(const std::shared_ptr<std_srvs::srv::Trigger::Request> request, std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
+void LogRecorder::stopRecording(const std::shared_ptr<std_srvs::srv::Trigger::Request> request, std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
     if (!isRecording_) {
         response->success = false;
         response->message = "No recording is in progress.";
@@ -72,7 +72,7 @@ void LogManager::stopRecording(const std::shared_ptr<std_srvs::srv::Trigger::Req
 }
 
 // Helper Functions
-std::string LogManager::generateUniqueFilename() {
+std::string LogRecorder::generateUniqueFilename() {
     // Declare local vars
     std::stringstream ss;
 
@@ -90,14 +90,14 @@ std::string LogManager::generateUniqueFilename() {
 }
 
 // Subscription Callback functions
-void LogManager::tfSubCallback(std::shared_ptr<rclcpp::SerializedMessage> msg) {
+void LogRecorder::tfSubCallback(std::shared_ptr<rclcpp::SerializedMessage> msg) {
     rclcpp::Time timestamp = this->now();
     if(isRecording_){
         recorder_->write(msg, "tf", "tf2_msgs/msg/TFMessage", timestamp);
     }
 }
 
-void LogManager::tfStaticSubCallback(std::shared_ptr<rclcpp::SerializedMessage> msg) {
+void LogRecorder::tfStaticSubCallback(std::shared_ptr<rclcpp::SerializedMessage> msg) {
     rclcpp::Time timestamp = this->now();
     if(isRecording_){
         recorder_->write(msg, "tf_static", "tf2_msgs/msg/TFMessage", timestamp);

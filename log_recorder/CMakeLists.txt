@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(log_manager)
+project(log_recorder)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -18,8 +18,8 @@ find_package(rosbag2_cpp REQUIRED)
 include_directories(include)
 
 # Create executable
-add_executable(log_manager src/main.cpp src/log_manager.cpp)
-ament_target_dependencies(log_manager 
+add_executable(log_recorder src/main.cpp src/log_recorder.cpp)
+ament_target_dependencies(log_recorder 
   rclcpp
   std_srvs 
   std_msgs
@@ -30,7 +30,7 @@ ament_target_dependencies(log_manager
 )
 
 install(TARGETS
-  log_manager
+  log_recorder
   DESTINATION lib/${PROJECT_NAME})
 
  install(DIRECTORY

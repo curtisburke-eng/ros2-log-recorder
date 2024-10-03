@@ -1,13 +1,13 @@
-#include "log_manager/log_manager.hpp"
+#include "log_recorder/log_recorder.hpp"
 
 int main(int argc, char **argv) {
     rclcpp::init(argc, argv);
     // Declare the node
-    auto logManager = std::make_shared<LogManager>("log_manager");
+    auto logRecorder = std::make_shared<LogRecorder>("log_recorder");
     // Init the node
-    logManager->init(); 
+    logRecorder->init(); 
     // Spin the node
-    rclcpp::spin(logManager);
+    rclcpp::spin(logRecorder);
     rclcpp::shutdown();
     return 0;
 }
