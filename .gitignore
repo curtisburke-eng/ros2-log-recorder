@@ -8,6 +8,9 @@ build
 install
 log
 
+# ros2 bag log recordings
+*log_recording_*
+
 # External repos from aion.repos:
 src/isaac_ros_common
 src/zed-ros2-wrapper
