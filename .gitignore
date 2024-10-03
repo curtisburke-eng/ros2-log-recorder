@@ -1,0 +1,12 @@
+# General:
+.devcontainer/Dockerfile
+/.vscode
+
+# ROS artifacts:
+workspace
+build
+install
+log
+
+# ros2 bag log recordings
+*log_recording_*
