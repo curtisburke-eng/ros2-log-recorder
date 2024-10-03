@@ -48,16 +48,19 @@ private:
             response->message = "Recording is already in progress.";
             return;
         }
+        // Initialize the recorder
+        recorder = std::make_unique<rosbag2_cpp::Writer>();
 
         // Generate unique filename
         std::string filename = generateUniqueFilename();
+
         // Start recording to filename
         recorder->open(filename);
 
         isRecording = true;
         response->success = true;
         response->message = "Started recording to " + filename;
-        RCLCPP_INFO(this->get_logger(), "Started recording to %s", filename.c_str());
+        RCLCPP_INFO(this->get_logger(), "Started recording to: %s", filename.c_str());
     }
 
     void stopRecording(const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
@@ -77,28 +80,39 @@ private:
     }
 
     std::string generateUniqueFilename() {
-        auto now = std::chrono::system_clock::now();
-        auto time = std::chrono::system_clock::to_time_t(now);    
+        // Declare local vars
         std::stringstream ss;
 
-        ss << "log_recording_" << std::put_time(std::localtime(&time), "%Y%m%d_%H%M%S") << ".db3";
+        // Set up the clock
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+        // Create a stringstream with the current timestamp
+        ss << "log_recording_" << std::put_time(std::localtime(&in_time_t), "%Y%m%d-%H%M%S");// << ".db3";
+
+        // Console Log the stringstream converted to a string
+        RCLCPP_INFO(this->get_logger(), "Generated filename: %s", ss.str().c_str());
+
         return ss.str();
     }
 
     // Subscription Callback functions
     void tfSubCallback(std::shared_ptr<rclcpp::SerializedMessage> msg) const {
         rclcpp::Time timestamp = this->now();
-
-        recorder->write(msg, "tf", "tf2_msgs/msg/TFMessage", timestamp);
+        if(isRecording){
+            recorder->write(msg, "tf", "tf2_msgs/msg/TFMessage", timestamp);
+        }
     }
     void tfStaticSubCallback(std::shared_ptr<rclcpp::SerializedMessage> msg) const {
         rclcpp::Time timestamp = this->now();
-
-        recorder->write(msg, "tf_static", "tf2_msgs/msg/TFMessage", timestamp);
+        if(isRecording){
+            recorder->write(msg, "tf_static", "tf2_msgs/msg/TFMessage", timestamp);
+        }
     }
 
+    // Declare members
     bool isRecording;
-    std::shared_ptr<rosbag2_cpp::Writer> recorder;
+    std::unique_ptr<rosbag2_cpp::Writer> recorder;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr startService;
     rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr stopService;
     // Declare Subscriptions
