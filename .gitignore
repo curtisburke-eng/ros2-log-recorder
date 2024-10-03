@@ -1,0 +1,13 @@
+# General:
+.devcontainer/Dockerfile
+/.vscode
+
+# ROS artifacts:
+workspace
+build
+install
+log
+
+# External repos from aion.repos:
+src/isaac_ros_common
+src/zed-ros2-wrapper
