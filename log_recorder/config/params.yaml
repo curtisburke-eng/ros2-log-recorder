@@ -1,0 +1,5 @@
+log_manager:
+  ros__parameters:
+    record_mode: 0
+    include_topics: ["tf", "tf2_msgs/msg/TFMessage","tf_static", "tf2_msgs/msg/TFMessage"]
+    exclude_topics: 0
