@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'log_recorder = log_recorder.log_recorder:main'
         ],
     },
 )
