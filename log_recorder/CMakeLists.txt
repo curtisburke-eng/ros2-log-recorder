@@ -15,7 +15,10 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(rosbag2_cpp REQUIRED)
 
-add_executable(log_manager src/log_manager.cpp)
+include_directories(include)
+
+# Create executable
+add_executable(log_manager src/main.cpp src/log_manager.cpp)
 ament_target_dependencies(log_manager 
   rclcpp
   std_srvs 
