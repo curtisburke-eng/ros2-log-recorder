@@ -1,23 +1,35 @@
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Trigger
-import signal
+from rcl_interfaces.msg import ParameterDescriptor
+from rcl_interfaces.msg import ParameterType
 from datetime import datetime
 import os
 import subprocess
+import signal
+
 
 class LogRecorder(Node):
     def __init__(self):
         super().__init__('log_recorder')
 
+        # Declare parameters
+        self.declare_parameter('topic_list', [""], 
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_STRING_ARRAY,
+                description="A list of topics to record",
+            )
+        )
+
         # Initialize services
         self.start_service = self.create_service(Trigger, 'start_recording', self.start_recording_callback)
         self.stop_service = self.create_service(Trigger, 'stop_recording', self.stop_recording_callback)
 
+        # Declare members
         self.is_recording = False
         self.process = None
 
-        self.get_logger().info(f"Log Manager Node is initialized.")
+        self.get_logger().info(f"Log Recorder Node is initialized.")
 
     def start_recording_callback(self, request, response):
         if self.is_recording:
@@ -31,8 +43,15 @@ class LogRecorder(Node):
         fileDir = "./"
         self.get_logger().info(f"Generated Filename: {fileDir + filename}")
 
-        # Command to start rosbag recording
-        topics = "/tf /tf_static"  # Add topics here
+        # Get the topics list from parameters
+        topic_list = self.get_parameter('topic_list').get_parameter_value().string_array_value
+        if not topic_list:
+            response.success = False
+            response.message = "No topics specified for recording."
+            return response
+        
+        # Prepare the command to start rosbag recording
+        topics = ' '.join(topic_list)  # Join the topics into a single string
         command = f"ros2 bag record {topics} -o {fileDir + filename}"
         
         # The os.setsid() is passed in the argument preexec_fn so it's run after the fork() and before  exec() to run the shell.
