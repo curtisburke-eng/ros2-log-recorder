@@ -1,8 +1,19 @@
 # log_recorder
-A ros2 wrapper node around the ros2 bag record API.
+# Summary
+This log recorder node will act as a wrapper around the ros2 bag record api.
 
-- Allows for dynamic changing of recorded topics with the use of a parameter file or cli. 
+# Description
+This node stands up two services: 
+- Service `/start_recording` which, when called:
+	- Generates a filename for the log recording based on the date and time
+	- Reads the list of topics from the ros parameters file
+	- Starts the ros2 bag recorder with the topics and destination filename
+- Service `/stop_recording` which, when called:
+	- Terminates the ros2 bag record subprocess
 
+This node also allows for the dynamic editing of topics to record both via the `param.yaml` configuration file or via `ros2 set param` console command. 
+
+# Instructions
 ## How to launch the node 
 From the top level log_recorder directory
 ```
