@@ -1,0 +1,6 @@
+log_recorder:
+  ros__parameters:
+    topic_list: [
+      "/tf",
+      "/tf_static"
+      ]
